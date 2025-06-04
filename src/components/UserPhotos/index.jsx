@@ -1,20 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import fetchModel from "../../lib/fetchModelData";
 import { Card, CardContent, CardMedia, Typography, Box, Divider, Button, Stack } from "@mui/material";
+import axios from "axios";
+import {UserContext} from "../Authorization/UserProvider";
 
 function UserPhotos({ advancedFeatures }) {
   const { userId } = useParams();
   const [photos, setPhotos] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [newComment, setNewComment] = useState("");
+  const { currentUser, setCurrentUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
+  const fetchData =  () =>{
+    axios.get(`http://localhost:8081/api/photo/photosOfUser/${userId}`).then((data) => {
+      setPhotos(data.data || []);
+
+    })
+        .catch((error) => {console.log(error)});
+  }
+
   useEffect(() => {
-    fetchModel(`/photosOfUser/${userId}`).then((data) => {
-      setPhotos(data || []);
-      setCurrentIndex(0); // reset về ảnh đầu tiên
-    });
+    // fetchModel(`/photosOfUser/${userId}`).then((data) => {
+    //   setPhotos(data || []);
+    //   setCurrentIndex(0); // reset về ảnh đầu tiên
+    // });
+
+    fetchData();
+    setCurrentIndex(0); // reset về ảnh đầu tiên
+
   }, [userId]);
 
   if (!Array.isArray(photos)) {
@@ -36,6 +52,13 @@ function UserPhotos({ advancedFeatures }) {
       setCurrentIndex(currentIndex - 1);
     }
   };
+
+  const handleCommentSubmit = (comment, photo, user_id) => {
+    if (!comment.trim()) return;
+    axios.post(`http://localhost:8081/api/photo/${photo._id}/addComment`,{comment, user_id} )
+        .then((response) => {console.log(response.data); fetchData()})
+        .catch(error => {console.log(error)});
+  }
 
   const renderSinglePhoto = () => {
     const photo = photos[currentIndex];
@@ -139,6 +162,21 @@ function UserPhotos({ advancedFeatures }) {
                   No comments yet.
                 </Typography>
               )}
+
+              <div>
+                <textarea
+                    rows={5}
+                    cols={40}
+                    value = {newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    style={{ fontSize: '16px', padding: '8px' }}
+                    placeholder="Nhập nội dung nhiều dòng tại đây..."
+                />
+                <button onClick={() => {handleCommentSubmit(newComment, photo, currentUser._id)}}>
+                  Comment
+                </button>
+              </div>
+
             </CardContent>
           </Card>
         ))

@@ -8,6 +8,11 @@ import TopBar from "./components/TopBar";
 import UserDetail from "./components/UserDetail";
 import UserList from "./components/UserList";
 import UserPhotos from "./components/UserPhotos";
+import Login from "./components/Login/Login";
+import PrivateRoute from "./components/Authorization/PrivateRoute";
+import Register from "./components/Register/Register";
+
+
 
 const App = (props) => {
   const [advancedFeatures, setAdvancedFeatures] = useState(false); 
@@ -31,15 +36,15 @@ const App = (props) => {
           <Grid item sm={9}>
             <Paper className="main-grid-item">
               <Routes>
-                <Route
-                  path="/users/:userId"
-                  element={<UserDetail />}
-                />
-                <Route
-                  path="/photos/:userId"
-                  element={<UserPhotos advancedFeatures={advancedFeatures} />}
-                />
-                <Route path="/users" element={<UserList />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+
+              {/* Protected routes */}
+                <Route element={<PrivateRoute />}>
+                  <Route path="/users/:userId" element={<UserDetail />} />
+                  <Route path="/photos/:userId" element={<UserPhotos advancedFeatures={advancedFeatures} />} />
+                  <Route path="/users" element={<UserList />} />
+                </Route>
               </Routes>
             </Paper>
           </Grid>
