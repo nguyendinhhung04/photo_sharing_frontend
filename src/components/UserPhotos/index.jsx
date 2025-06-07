@@ -87,7 +87,7 @@ function UserPhotos({ advancedFeatures }) {
         <Card key={photo._id} sx={{ marginBottom: 4 }}>
           <CardMedia
             component="img"
-            image={`/images/${photo.file_name}`}
+            image={`https://ntnmm6-8081.csb.app/api/photo/image/${photo.file_name}`}
             alt={`Photo uploaded on ${new Date(
               photo.date_time
             ).toLocaleString()}`}
