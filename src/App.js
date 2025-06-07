@@ -1,4 +1,4 @@
-import './App.css';
+import "./App.css";
 
 import React, { useState } from "react";
 import { Grid, Paper } from "@mui/material";
@@ -11,11 +11,10 @@ import UserPhotos from "./components/UserPhotos";
 import Login from "./components/Login/Login";
 import PrivateRoute from "./components/Authorization/PrivateRoute";
 import Register from "./components/Register/Register";
-
-
+import { UploadImage } from "./components/UploadImage/UploadImage";
 
 const App = (props) => {
-  const [advancedFeatures, setAdvancedFeatures] = useState(false); 
+  const [advancedFeatures, setAdvancedFeatures] = useState(false);
 
   return (
     <Router>
@@ -39,10 +38,14 @@ const App = (props) => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-              {/* Protected routes */}
+                {/* Protected routes */}
                 <Route element={<PrivateRoute />}>
+                  <Route path="/uploadImg/" element={<UploadImage />} />
                   <Route path="/users/:userId" element={<UserDetail />} />
-                  <Route path="/photos/:userId" element={<UserPhotos advancedFeatures={advancedFeatures} />} />
+                  <Route
+                    path="/photos/:userId"
+                    element={<UserPhotos advancedFeatures={advancedFeatures} />}
+                  />
                   <Route path="/users" element={<UserList />} />
                 </Route>
               </Routes>
@@ -52,6 +55,6 @@ const App = (props) => {
       </div>
     </Router>
   );
-}
+};
 
 export default App;
