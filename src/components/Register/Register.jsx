@@ -1,7 +1,11 @@
 import React, {useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export const Register = () => {
+
+    const navigate = useNavigate();
+
     const [newUser, setNewUser] = useState(
         {
             login_name:  "",
@@ -21,23 +25,33 @@ export const Register = () => {
             ...prevState,
             [name]: value
         }));
-        // axios.get(`api/user/checkLogin_name/${newUser.login_name}`).then((response) => {
-        //     if(response.data.status === true){
-        //         setLoginNameExists(true)
-        //     }
-        //     else
-        //     {
-        //         setLoginNameExists(false)
-        //     }
-        // })
+
     }
 
     const handleSubmit = (e) => {
-        axios.post("api/user/addUser", newUser)
-            .then((response) => {console.log(response.data)})
-            .catch((error) => {
-                console.error("There was an error registering the user!", error);
-            });
+        console.log(newUser.login_name);
+
+        const LoginName = {
+            login_name: newUser.login_name
+        };
+
+        axios.post(`http://localhost:8081/api/user/checkLogin_name/`,LoginName ).then((response) => {
+            if(response.data.status === true){
+                setLoginNameExists(true);
+                console.log("Login name exists");
+            }
+            else
+            {
+                console.log("Login name does not exist");
+                setLoginNameExists(false);
+                axios.post("http://localhost:8081/api/user/addUser", newUser)
+                    .then((response) => {console.log(response.data); navigate("/login")})
+                    .catch((error) => {
+                        console.error("There was an error registering the user!", error);
+                    });
+            }
+
+        })
 
     }
 
@@ -63,7 +77,7 @@ export const Register = () => {
                         placeholder="Enter login name"
                         style={{ width: "100%", padding: 8 }}
                     />
-                    {!loginNameExists && (
+                    {loginNameExists && (
                         <p style={{color: "red"}} >Username Already exist</p>
                     )}
                 </div>
@@ -141,7 +155,7 @@ export const Register = () => {
                         borderRadius: 4,
                         cursor: "pointer"
                     }}
-                    onClick={(e) => {handleSubmit(e)}}
+                    onClick={handleSubmit}
                 >
                     Register
                 </button>
